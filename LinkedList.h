@@ -2,19 +2,17 @@
 #define _LINKED_LIST_H
 #include <unordered_set>
 #include <iostream>
-
 #include "Node.h"
-
 
 using namespace std;
 
 class LinkedList {
-  public:
-
+public:
     Node * root;
 
     LinkedList() : root(nullptr) {}
 
+    // Copy constructor
     LinkedList(const LinkedList &other) : root(nullptr) {
         if (other.root) {
             root = new Node(other.root->data);
@@ -27,6 +25,7 @@ class LinkedList {
             }
         }
     }
+
     void insertAtBeginning(int val) {
         Node * newNode = new Node(val);
         newNode->next = root;
@@ -46,14 +45,9 @@ class LinkedList {
         current->next = newNode;
     }
 
-    Node * getLastElement() {
-        Node * current = root;
-        if (!root) return;
-        Node* last = getLastElement();
-        if (last) {
-            last->next = last;  // Create a cycle by linking the last node to itself
-        }
-        }   while (current && current->next) {
+    Node* getLastElement() {
+        Node* current = root;
+        while (current && current->next) {
             current = current->next;
         }
         return current;
@@ -77,6 +71,7 @@ class LinkedList {
             delete temp;
         }
     }
+
     void deleteAtIndex(int index) {
         if (!root || index < 0) return;
         if (index == 0) {
@@ -95,90 +90,98 @@ class LinkedList {
             delete temp;
         }
     }
-   
+
+    // Function to create a cycle in the list by linking the last node to the first
     void pointerJumping() {
         if (!root) return;
         Node* last = getLastElement();
         if (last) {
-            last->next = last;  // Create a cycle by linking the last node to itself
+            last->next = root;  // Create a cycle by linking the last node to the first node
         }
     }
-    
-   
-bool non_negative_prefix() {
-    if (!root) {
-        std::cout << "Invalid input" << std::endl;
-        return false;
-    }
-    int sum = 0;
-    Node* current = root;
-    while (current) {
-        if (current->data > 1 || current->data < -1) {
-            std::cout << "List should contain only -1, 0, +1" << std::endl;
+
+    bool non_negative_prefix() {
+        if (!root) {
+            std::cout << "Invalid input" << std::endl;
             return false;
         }
-        sum += current->data;
-        if (sum < 0) {
-            return false;
-        }
-        current = current->next;
-    }
-    return true;
-}
-
-bool non_positive_prefix() {
-    if (!root) {
-        std::cout << "Invalid input" << std::endl;
-        return false;
-    }
-    int sum = 0;
-    Node* current = root;
-    while (current) {
-        if (current->data > 1 || current->data < -1) {
-            std::cout << "List should contain only -1, 0, +1" << std::endl;
-            return false;
-        }
-        sum += current->data;
-        if (sum > 0) {
-            return false;
-        }
-        current = current->next;
-    }
-    return true;
-}
-
-
-
-    ~LinkedList(){
-        if(root) {
-            Node* last = getLastElement();
-            if(last && last->next == last)
-                last->next = nullptr;
-        }
+        int sum = 0;
         Node* current = root;
-        while(current){
-            Node* next = current->next;
-            delete current;
-            current = next;
-       }
-       root = nullptr;
+        while (current) {
+            if (current->data > 1 || current->data < -1) {
+                std::cout << "List should contain only -1, 0, +1" << std::endl;
+                return false;
+            }
+            sum += current->data;
+            if (sum < 0) {
+                return false;
+            }
+            current = current->next;
+        }
+        return true;
+    }
+
+    bool non_positive_prefix() {
+        if (!root) {
+            std::cout << "Invalid input" << std::endl;
+            return false;
+        }
+        int sum = 0;
+        Node* current = root;
+        while (current) {
+            if (current->data > 1 || current->data < -1) {
+                std::cout << "List should contain only -1, 0, +1" << std::endl;
+                return false;
+            }
+            sum += current->data;
+            if (sum > 0) {
+                return false;
+            }
+            current = current->next;
+        }
+        return true;
+    }
+
+    // Destructor to clean up memory and handle cycles
+    ~LinkedList() {
+        if (root) {
+            Node* current = root;
+            Node* next = nullptr;
+
+            // Check for cycles and break them
+            std::unordered_set<Node*> visited;
+            while (current) {
+                if (visited.count(current)) {
+                    current->next = nullptr;  // Break the cycle
+                    break;
+                }
+                visited.insert(current);
+                next = current->next;
+                delete current;
+                current = next;
+            }
+        }
+        root = nullptr;
     }
 };
 
-
-ostream & operator<<(ostream &os, const LinkedList &list) {
+// Overloaded << operator to display the linked list
+ostream& operator<<(ostream& os, const LinkedList& list) {
     std::unordered_set<Node*> visited;
-    for (Node* curr = list.root; curr; curr = curr->next) {
-        if (visited.count(curr)) {
+    Node* current = list.root;
+    while (current) {
+        if (visited.count(current)) {
             os << " (cycle detected)";
             break;
         }
-        os << curr->data << (curr->next ? " -> " : "");
-        visited.insert(curr);
+        os << current->data << (current->next ? " -> " : "");
+        visited.insert(current);
+        current = current->next;
     }
     if (!list.root) {
-        os << "-> NULL";
+        os << "NULL";
     }
     return os;
 }
+
 #endif
