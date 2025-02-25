@@ -12,7 +12,7 @@ public:
 
     LinkedList() : root(nullptr) {}
 
-    // Copy constructor
+
     LinkedList(const LinkedList &other) : root(nullptr) {
         if (other.root) {
             root = new Node(other.root->data);
@@ -46,8 +46,9 @@ public:
     }
 
     Node* getLastElement() {
+        if (!root) return nullptr;
         Node* current = root;
-        while (current && current->next) {
+        while (current->next) {
             current = current->next;
         }
         return current;
@@ -91,12 +92,12 @@ public:
         }
     }
 
-    // Function to create a cycle in the list by linking the last node to the first
+  
     void pointerJumping() {
         if (!root) return;
         Node* last = getLastElement();
         if (last) {
-            last->next = root;  // Create a cycle by linking the last node to the first node
+            last->next = root;  
         }
     }
 
@@ -142,17 +143,16 @@ public:
         return true;
     }
 
-    // Destructor to clean up memory and handle cycles
     ~LinkedList() {
         if (root) {
             Node* current = root;
             Node* next = nullptr;
 
-            // Check for cycles and break them
+           
             std::unordered_set<Node*> visited;
             while (current) {
                 if (visited.count(current)) {
-                    current->next = nullptr;  // Break the cycle
+                    current->next = nullptr;  
                     break;
                 }
                 visited.insert(current);
@@ -165,7 +165,7 @@ public:
     }
 };
 
-// Overloaded << operator to display the linked list
+
 ostream& operator<<(ostream& os, const LinkedList& list) {
     std::unordered_set<Node*> visited;
     Node* current = list.root;
