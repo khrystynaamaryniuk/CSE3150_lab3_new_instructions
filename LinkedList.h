@@ -48,7 +48,12 @@ class LinkedList {
 
     Node * getLastElement() {
         Node * current = root;
-        while (current->next) {
+        if (!root) return;
+        Node* last = getLastElement();
+        if (last) {
+            last->next = last;  // Create a cycle by linking the last node to itself
+        }
+        }   while (current && current->next) {
             current = current->next;
         }
         return current;
@@ -94,16 +99,11 @@ class LinkedList {
     void pointerJumping() {
         if (!root) return;
         Node* last = getLastElement();
-        if (!last) return;
-        last->next = last;
-        Node* current = root;
-        while (current && current != last) {
-            Node* temp = current->next; 
-            if (temp == last) break;
-            current->next = last;
-            current = temp;
+        if (last) {
+            last->next = last;  // Create a cycle by linking the last node to itself
         }
     }
+    
    
 bool non_negative_prefix() {
     if (!root) {
