@@ -9,3 +9,12 @@
 
 
 ./my_program
+
+ To compile the unitTests:
+
+
+ g++ -o my_program unitTests.cpp -std=c++11
+
+ To run the tests:
+
+./my_program
